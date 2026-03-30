@@ -1,0 +1,652 @@
+{% doc %}
+  @prompt
+    ik moet een travel agency site maken dus heb een sectie nodig die naar verschillende landen verwijst
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-travel-destinations-{{ ai_gen_id }} {
+    display: block;
+    width: {{ block.settings.desktop_width_percent }}%;
+    max-width: 100%;
+    padding: {{ block.settings.section_padding }}px 0;
+  }
+
+  .ai-travel-destinations__container-{{ ai_gen_id }} {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  .ai-travel-destinations__header-{{ ai_gen_id }} {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  .ai-travel-destinations__title-{{ ai_gen_id }} {
+    font-size: {{ block.settings.title_size }}px;
+    color: {{ block.settings.title_color }};
+    margin: 0 0 15px;
+    font-family: {{ block.settings.title_font.family }}, {{ block.settings.title_font.fallback_families }};
+    font-weight: {{ block.settings.title_font.weight }};
+  }
+
+  .ai-travel-destinations__subtitle-{{ ai_gen_id }} {
+    font-size: {{ block.settings.subtitle_size }}px;
+    color: {{ block.settings.subtitle_color }};
+    margin: 0;
+  }
+
+  .ai-travel-destinations__grid-{{ ai_gen_id }} {
+    display: grid;
+    grid-template-columns: repeat({{ block.settings.columns_desktop }}, 1fr);
+    gap: {{ block.settings.grid_gap }}px;
+  }
+
+  .ai-travel-destinations__card-{{ ai_gen_id }} {
+    position: relative;
+    overflow: hidden;
+    border-radius: {{ block.settings.card_border_radius }}px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    aspect-ratio: {{ block.settings.card_aspect_ratio }};
+  }
+
+  .ai-travel-destinations__card-{{ ai_gen_id }}:hover {
+    transform: translateY(-5px);
+  }
+
+  .ai-travel-destinations__image-wrapper-{{ ai_gen_id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .ai-travel-destinations__image-{{ ai_gen_id }} {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .ai-travel-destinations__placeholder-{{ ai_gen_id }} {
+    width: 100%;
+    height: 100%;
+    background-color: #f4f4f4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ai-travel-destinations__placeholder-{{ ai_gen_id }} svg {
+    width: 100%;
+    height: 100%;
+    max-width: 200px;
+    max-height: 200px;
+  }
+
+  .ai-travel-destinations__overlay-{{ ai_gen_id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, {{ block.settings.overlay_opacity }}) 100%
+    );
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 30px;
+    color: {{ block.settings.card_text_color }};
+  }
+
+  .ai-travel-destinations__country-{{ ai_gen_id }} {
+    font-size: {{ block.settings.country_size }}px;
+    font-weight: 700;
+    margin: 0 0 8px;
+    font-family: {{ block.settings.title_font.family }}, {{ block.settings.title_font.fallback_families }};
+  }
+
+  .ai-travel-destinations__description-{{ ai_gen_id }} {
+    font-size: {{ block.settings.description_size }}px;
+    margin: 0 0 15px;
+    opacity: 0.9;
+  }
+
+  .ai-travel-destinations__link-{{ ai_gen_id }} {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: {{ block.settings.card_text_color }};
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    transition: gap 0.3s ease;
+  }
+
+  .ai-travel-destinations__link-{{ ai_gen_id }}:hover {
+    gap: 12px;
+  }
+
+  .ai-travel-destinations__arrow-{{ ai_gen_id }} {
+    width: 20px;
+    height: 20px;
+  }
+
+  @media screen and (max-width: 989px) {
+    .ai-travel-destinations__grid-{{ ai_gen_id }} {
+      grid-template-columns: repeat({{ block.settings.columns_tablet }}, 1fr);
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-travel-destinations__grid-{{ ai_gen_id }} {
+      grid-template-columns: repeat({{ block.settings.columns_mobile }}, 1fr);
+    }
+
+    .ai-travel-destinations__title-{{ ai_gen_id }} {
+      font-size: calc({{ block.settings.title_size }}px * 0.8);
+    }
+
+    .ai-travel-destinations__country-{{ ai_gen_id }} {
+      font-size: calc({{ block.settings.country_size }}px * 0.85);
+    }
+
+    .ai-travel-destinations__overlay-{{ ai_gen_id }} {
+      padding: 20px;
+    }
+  }
+{% endstyle %}
+
+<travel-destinations-{{ ai_gen_id }}
+  class="ai-travel-destinations-{{ ai_gen_id }}"
+  {{ block.shopify_attributes }}
+>
+  <div class="ai-travel-destinations__container-{{ ai_gen_id }}">
+    {% if block.settings.title != blank or block.settings.subtitle != blank %}
+      <div class="ai-travel-destinations__header-{{ ai_gen_id }}">
+        {% if block.settings.title != blank %}
+          <h2 class="ai-travel-destinations__title-{{ ai_gen_id }}">
+            {{ block.settings.title }}
+          </h2>
+        {% endif %}
+        {% if block.settings.subtitle != blank %}
+          <p class="ai-travel-destinations__subtitle-{{ ai_gen_id }}">
+            {{ block.settings.subtitle }}
+          </p>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <div class="ai-travel-destinations__grid-{{ ai_gen_id }}">
+      {% for i in (1..6) %}
+        {% liquid
+          assign country_key = 'country_' | append: i
+          assign description_key = 'description_' | append: i
+          assign image_key = 'image_' | append: i
+          assign link_key = 'link_' | append: i
+
+          assign country = block.settings[country_key]
+          assign description = block.settings[description_key]
+          assign image = block.settings[image_key]
+          assign link = block.settings[link_key]
+        %}
+
+        {% if country != blank %}
+          <a
+            href="{{ link }}"
+            class="ai-travel-destinations__card-{{ ai_gen_id }}"
+            data-destination="{{ i }}"
+          >
+            <div class="ai-travel-destinations__image-wrapper-{{ ai_gen_id }}">
+              {% if image %}
+                <img
+                  src="{{ image | image_url: width: 800 }}"
+                  alt="{{ country | escape }}"
+                  loading="lazy"
+                  width="{{ image.width }}"
+                  height="{{ image.height }}"
+                  class="ai-travel-destinations__image-{{ ai_gen_id }}"
+                >
+              {% else %}
+                <div class="ai-travel-destinations__placeholder-{{ ai_gen_id }}">
+                  {{ 'image' | placeholder_svg_tag }}
+                </div>
+              {% endif %}
+            </div>
+
+            <div class="ai-travel-destinations__overlay-{{ ai_gen_id }}">
+              <h3 class="ai-travel-destinations__country-{{ ai_gen_id }}">
+                {{ country }}
+              </h3>
+              {% if description != blank %}
+                <p class="ai-travel-destinations__description-{{ ai_gen_id }}">
+                  {{ description }}
+                </p>
+              {% endif %}
+              <span class="ai-travel-destinations__link-{{ ai_gen_id }}">
+                {{ block.settings.link_text }}
+                <svg
+                  class="ai-travel-destinations__arrow-{{ ai_gen_id }}"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                  <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+              </span>
+            </div>
+          </a>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</travel-destinations-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class TravelDestinations{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+      }
+
+      connectedCallback() {
+        this.cards = this.querySelectorAll('.ai-travel-destinations__card-{{ ai_gen_id }}');
+        this.setupEventListeners();
+      }
+
+      setupEventListeners() {
+        this.cards.forEach((card) => {
+          card.addEventListener('click', (e) => {
+            const href = card.getAttribute('href');
+            if (!href || href === '#' || href === '') {
+              e.preventDefault();
+            }
+          });
+        });
+      }
+    }
+
+    customElements.define('travel-destinations-{{ ai_gen_id }}', TravelDestinations{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Reisbestemmingen",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Koptekst"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "title",
+      "label": "Titel",
+      "default": "Ontdek onze bestemmingen"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "subtitle",
+      "label": "Ondertitel",
+      "default": "Kies uw volgende avontuur"
+    },
+    {
+      "type": "font_picker",
+      "id": "title_font",
+      "label": "Lettertype titel",
+      "default": "montserrat_n4"
+    },
+    {
+      "type": "range",
+      "id": "title_size",
+      "label": "Titelgrootte",
+      "min": 20,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "subtitle_size",
+      "label": "Ondertitelgrootte",
+      "min": 12,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Titelkleur",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "subtitle_color",
+      "label": "Ondertitelkleur",
+      "default": "#666666"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "desktop_width_percent",
+      "label": "Desktop breedte",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "section_padding",
+      "label": "Sectie padding",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 50
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "Kolommen op desktop",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "columns_tablet",
+      "label": "Kolommen op tablet",
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "default": 2
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "label": "Kolommen op mobiel",
+      "options": [
+        {
+          "value": "1",
+          "label": "1"
+        },
+        {
+          "value": "2",
+          "label": "2"
+        }
+      ],
+      "default": "1"
+    },
+    {
+      "type": "range",
+      "id": "grid_gap",
+      "label": "Ruimte tussen kaarten",
+      "min": 10,
+      "max": 50,
+      "step": 5,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "Kaartstijl"
+    },
+    {
+      "type": "select",
+      "id": "card_aspect_ratio",
+      "label": "Beeldverhouding",
+      "options": [
+        {
+          "value": "1 / 1",
+          "label": "Vierkant (1:1)"
+        },
+        {
+          "value": "4 / 3",
+          "label": "Landschap (4:3)"
+        },
+        {
+          "value": "3 / 4",
+          "label": "Portret (3:4)"
+        },
+        {
+          "value": "16 / 9",
+          "label": "Breed (16:9)"
+        }
+      ],
+      "default": "4 / 3"
+    },
+    {
+      "type": "range",
+      "id": "card_border_radius",
+      "label": "Hoekafronding",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Overlay transparantie",
+      "min": 0,
+      "max": 1,
+      "step": 0.1,
+      "default": 0.6
+    },
+    {
+      "type": "color",
+      "id": "card_text_color",
+      "label": "Tekstkleur kaart",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "country_size",
+      "label": "Landnaamgrootte",
+      "min": 16,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "description_size",
+      "label": "Beschrijvingsgrootte",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "inline_richtext",
+      "id": "link_text",
+      "label": "Linktekst",
+      "default": "Ontdek meer"
+    },
+    {
+      "type": "header",
+      "content": "Bestemming 1"
+    },
+    {
+      "type": "text",
+      "id": "country_1",
+      "label": "Landnaam",
+      "default": "Nederland"
+    },
+    {
+      "type": "text",
+      "id": "description_1",
+      "label": "Beschrijving",
+      "default": "Ontdek tulpenvelden en historische steden"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_1",
+      "label": "Afbeelding"
+    },
+    {
+      "type": "url",
+      "id": "link_1",
+      "label": "Link"
+    },
+    {
+      "type": "header",
+      "content": "Bestemming 2"
+    },
+    {
+      "type": "text",
+      "id": "country_2",
+      "label": "Landnaam",
+      "default": "Frankrijk"
+    },
+    {
+      "type": "text",
+      "id": "description_2",
+      "label": "Beschrijving",
+      "default": "Ervaar de romantiek van Parijs"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_2",
+      "label": "Afbeelding"
+    },
+    {
+      "type": "url",
+      "id": "link_2",
+      "label": "Link"
+    },
+    {
+      "type": "header",
+      "content": "Bestemming 3"
+    },
+    {
+      "type": "text",
+      "id": "country_3",
+      "label": "Landnaam",
+      "default": "Italië"
+    },
+    {
+      "type": "text",
+      "id": "description_3",
+      "label": "Beschrijving",
+      "default": "Geniet van kunst, cultuur en culinair"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_3",
+      "label": "Afbeelding"
+    },
+    {
+      "type": "url",
+      "id": "link_3",
+      "label": "Link"
+    },
+    {
+      "type": "header",
+      "content": "Bestemming 4"
+    },
+    {
+      "type": "text",
+      "id": "country_4",
+      "label": "Landnaam",
+      "default": "Spanje"
+    },
+    {
+      "type": "text",
+      "id": "description_4",
+      "label": "Beschrijving",
+      "default": "Zon, zee en Spaanse levensstijl"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_4",
+      "label": "Afbeelding"
+    },
+    {
+      "type": "url",
+      "id": "link_4",
+      "label": "Link"
+    },
+    {
+      "type": "header",
+      "content": "Bestemming 5"
+    },
+    {
+      "type": "text",
+      "id": "country_5",
+      "label": "Landnaam",
+      "default": "Griekenland"
+    },
+    {
+      "type": "text",
+      "id": "description_5",
+      "label": "Beschrijving",
+      "default": "Verken oude ruïnes en prachtige eilanden"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_5",
+      "label": "Afbeelding"
+    },
+    {
+      "type": "url",
+      "id": "link_5",
+      "label": "Link"
+    },
+    {
+      "type": "header",
+      "content": "Bestemming 6"
+    },
+    {
+      "type": "text",
+      "id": "country_6",
+      "label": "Landnaam",
+      "default": "Portugal"
+    },
+    {
+      "type": "text",
+      "id": "description_6",
+      "label": "Beschrijving",
+      "default": "Ontdek charmante kustplaatsen"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_6",
+      "label": "Afbeelding"
+    },
+    {
+      "type": "url",
+      "id": "link_6",
+      "label": "Link"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Reisbestemmingen"
+    }
+  ]
+}
+{% endschema %}

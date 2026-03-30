@@ -1,0 +1,488 @@
+{% doc %}
+  @prompt
+    groto foto waar ik een tekst in kan zetten met parralax
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-parallax-hero-{{ ai_gen_id }} {
+    position: relative;
+    width: {{ block.settings.desktop_width_percent }}%;
+    max-width: 100%;
+    height: {{ block.settings.section_height }}px;
+    overflow: hidden;
+    display: block;
+  }
+
+  .ai-parallax-hero-image-wrapper-{{ ai_gen_id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 120%;
+    will-change: transform;
+  }
+
+  .ai-parallax-hero-image-{{ ai_gen_id }} {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .ai-parallax-hero-placeholder-{{ ai_gen_id }} {
+    width: 100%;
+    height: 100%;
+    background-color: #f4f4f4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .ai-parallax-hero-placeholder-{{ ai_gen_id }} svg {
+    width: 100%;
+    height: 100%;
+    max-width: 500px;
+    max-height: 500px;
+  }
+
+  .ai-parallax-hero-empty-state-{{ ai_gen_id }} {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 12px 20px;
+    font-size: 14px;
+    color: #666;
+    text-align: center;
+    pointer-events: none;
+  }
+
+  .ai-parallax-hero-overlay-{{ ai_gen_id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: {{ block.settings.overlay_color }};
+    opacity: {{ block.settings.overlay_opacity | divided_by: 100.0 }};
+    pointer-events: none;
+  }
+
+  .ai-parallax-hero-content-{{ ai_gen_id }} {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: {{ block.settings.text_alignment }};
+    z-index: 2;
+    width: 90%;
+    max-width: {{ block.settings.content_max_width }}px;
+  }
+
+  .ai-parallax-hero-heading-{{ ai_gen_id }} {
+    color: {{ block.settings.text_color }};
+    font-size: {{ block.settings.heading_size }}px;
+    margin: 0 0 {{ block.settings.text_spacing }}px 0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, {{ block.settings.text_shadow | divided_by: 100.0 }});
+  }
+
+  .ai-parallax-hero-subheading-{{ ai_gen_id }} {
+    color: {{ block.settings.text_color }};
+    font-size: {{ block.settings.subheading_size }}px;
+    margin: 0 0 {{ block.settings.text_spacing }}px 0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, {{ block.settings.text_shadow | divided_by: 100.0 }});
+  }
+
+  .ai-parallax-hero-text-{{ ai_gen_id }} {
+    color: {{ block.settings.text_color }};
+    font-size: {{ block.settings.text_size }}px;
+    margin: 0 0 {{ block.settings.text_spacing }}px 0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, {{ block.settings.text_shadow | divided_by: 100.0 }});
+  }
+
+  .ai-parallax-hero-button-{{ ai_gen_id }} {
+    display: inline-block;
+    padding: {{ block.settings.button_padding }}px {{ block.settings.button_padding | times: 2 }}px;
+    background-color: {{ block.settings.button_color }};
+    color: {{ block.settings.button_text_color }};
+    text-decoration: none;
+    border-radius: {{ block.settings.button_border_radius }}px;
+    font-size: {{ block.settings.button_text_size }}px;
+    transition: background-color 0.3s ease;
+    text-shadow: none;
+  }
+
+  .ai-parallax-hero-button-{{ ai_gen_id }}:hover {
+    background-color: {{ block.settings.button_hover_color }};
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-parallax-hero-{{ ai_gen_id }} {
+      height: {{ block.settings.mobile_height }}px;
+    }
+
+    .ai-parallax-hero-heading-{{ ai_gen_id }} {
+      font-size: {{ block.settings.heading_size | times: 0.6 }}px;
+    }
+
+    .ai-parallax-hero-subheading-{{ ai_gen_id }} {
+      font-size: {{ block.settings.subheading_size | times: 0.7 }}px;
+    }
+
+    .ai-parallax-hero-text-{{ ai_gen_id }} {
+      font-size: {{ block.settings.text_size | times: 0.8 }}px;
+    }
+  }
+{% endstyle %}
+
+<parallax-hero-{{ ai_gen_id }}
+  class="ai-parallax-hero-{{ ai_gen_id }}"
+  data-parallax-speed="{{ block.settings.parallax_speed }}"
+  {{ block.shopify_attributes }}
+>
+  <div class="ai-parallax-hero-image-wrapper-{{ ai_gen_id }}">
+    {% if block.settings.image %}
+      <img
+        src="{{ block.settings.image | image_url: width: 2000 }}"
+        alt="{{ block.settings.image.alt | escape }}"
+        loading="lazy"
+        width="{{ block.settings.image.width }}"
+        height="{{ block.settings.image.height }}"
+        class="ai-parallax-hero-image-{{ ai_gen_id }}"
+      >
+    {% else %}
+      <div class="ai-parallax-hero-placeholder-{{ ai_gen_id }}">
+        {{ 'hero-apparel-1' | placeholder_svg_tag }}
+        <div class="ai-parallax-hero-empty-state-{{ ai_gen_id }}">
+          Voeg een afbeelding toe
+        </div>
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="ai-parallax-hero-overlay-{{ ai_gen_id }}"></div>
+
+  <div class="ai-parallax-hero-content-{{ ai_gen_id }}">
+    {% if block.settings.heading != blank %}
+      <h2 class="ai-parallax-hero-heading-{{ ai_gen_id }}">{{ block.settings.heading }}</h2>
+    {% endif %}
+
+    {% if block.settings.subheading != blank %}
+      <h3 class="ai-parallax-hero-subheading-{{ ai_gen_id }}">{{ block.settings.subheading }}</h3>
+    {% endif %}
+
+    {% if block.settings.text != blank %}
+      <div class="ai-parallax-hero-text-{{ ai_gen_id }}">{{ block.settings.text }}</div>
+    {% endif %}
+
+    {% if block.settings.button_text != blank and block.settings.button_link != blank %}
+      <a
+        href="{{ block.settings.button_link }}"
+        class="ai-parallax-hero-button-{{ ai_gen_id }}"
+      >
+        {{ block.settings.button_text }}
+      </a>
+    {% endif %}
+  </div>
+</parallax-hero-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class ParallaxHero{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+        this.imageWrapper = this.querySelector('.ai-parallax-hero-image-wrapper-{{ ai_gen_id }}');
+        this.parallaxSpeed = parseFloat(this.dataset.parallaxSpeed) || 0.5;
+      }
+
+      connectedCallback() {
+        this.setupParallax();
+      }
+
+      setupParallax() {
+        if (!this.imageWrapper) return;
+
+        const handleScroll = () => {
+          const rect = this.getBoundingClientRect();
+          const scrolled = window.pageYOffset;
+          const elementTop = rect.top + scrolled;
+          const elementHeight = rect.height;
+          const windowHeight = window.innerHeight;
+
+          if (rect.top < windowHeight && rect.bottom > 0) {
+            const scrollProgress = (scrolled + windowHeight - elementTop) / (elementHeight + windowHeight);
+            const translateY = (scrollProgress - 0.5) * 100 * this.parallaxSpeed;
+            this.imageWrapper.style.transform = `translateY(${translateY}px)`;
+          }
+        };
+
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        handleScroll();
+      }
+    }
+
+    customElements.define('parallax-hero-{{ ai_gen_id }}', ParallaxHero{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Parallax hero",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Afbeelding"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Afbeelding"
+    },
+    {
+      "type": "range",
+      "id": "section_height",
+      "label": "Hoogte desktop",
+      "min": 300,
+      "max": 900,
+      "step": 50,
+      "unit": "px",
+      "default": 600
+    },
+    {
+      "type": "range",
+      "id": "mobile_height",
+      "label": "Hoogte mobiel",
+      "min": 200,
+      "max": 600,
+      "step": 50,
+      "unit": "px",
+      "default": 400
+    },
+    {
+      "type": "range",
+      "id": "desktop_width_percent",
+      "label": "Desktop breedte",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "header",
+      "content": "Parallax effect"
+    },
+    {
+      "type": "range",
+      "id": "parallax_speed",
+      "label": "Parallax snelheid",
+      "min": 0,
+      "max": 1,
+      "step": 0.1,
+      "default": 0.5
+    },
+    {
+      "type": "header",
+      "content": "Overlay"
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Overlay kleur",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Overlay transparantie",
+      "min": 0,
+      "max": 80,
+      "step": 5,
+      "unit": "%",
+      "default": 30
+    },
+    {
+      "type": "header",
+      "content": "Tekst inhoud"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "Hoofdtitel",
+      "default": "Welkom bij onze winkel"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "subheading",
+      "label": "Ondertitel",
+      "default": "Ontdek onze collectie"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Tekst",
+      "default": "<p>Verken onze unieke producten en vind wat je zoekt</p>"
+    },
+    {
+      "type": "range",
+      "id": "content_max_width",
+      "label": "Maximale breedte inhoud",
+      "min": 400,
+      "max": 1000,
+      "step": 50,
+      "unit": "px",
+      "default": 700
+    },
+    {
+      "type": "header",
+      "content": "Tekst stijl"
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "Tekst uitlijning",
+      "options": [
+        {
+          "value": "left",
+          "label": "Links"
+        },
+        {
+          "value": "center",
+          "label": "Midden"
+        },
+        {
+          "value": "right",
+          "label": "Rechts"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Tekst kleur",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Hoofdtitel grootte",
+      "min": 24,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "subheading_size",
+      "label": "Ondertitel grootte",
+      "min": 16,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "text_size",
+      "label": "Tekst grootte",
+      "min": 12,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "text_spacing",
+      "label": "Tekst afstand",
+      "min": 10,
+      "max": 40,
+      "step": 5,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "text_shadow",
+      "label": "Tekst schaduw",
+      "min": 0,
+      "max": 100,
+      "step": 10,
+      "unit": "%",
+      "default": 30
+    },
+    {
+      "type": "header",
+      "content": "Knop"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Knop tekst",
+      "default": "Bekijk collectie"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Knop link"
+    },
+    {
+      "type": "color",
+      "id": "button_color",
+      "label": "Knop kleur",
+      "default": "#00b77f"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_color",
+      "label": "Knop hover kleur",
+      "default": "#009966"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Knop tekst kleur",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "button_text_size",
+      "label": "Knop tekst grootte",
+      "min": 12,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "button_padding",
+      "label": "Knop padding",
+      "min": 8,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "button_border_radius",
+      "label": "Knop border radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 4
+    }
+  ],
+  "presets": [
+    {
+      "name": "Parallax hero"
+    }
+  ]
+}
+{% endschema %}

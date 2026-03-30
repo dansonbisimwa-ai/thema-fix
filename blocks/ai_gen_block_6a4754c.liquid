@@ -1,0 +1,361 @@
+{% doc %}
+  @prompt
+    tekst sectie waar ik ook de tekst kleuren en stijl kan veranderen
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-text-section-{{ ai_gen_id }} {
+    display: block;
+    width: {{ block.settings.desktop_width_percent }}%;
+    max-width: 100%;
+    padding: {{ block.settings.padding_top }}px {{ block.settings.padding_horizontal }}px {{ block.settings.padding_bottom }}px {{ block.settings.padding_horizontal }}px;
+    background-color: {{ block.settings.background_color }};
+    text-align: {{ block.settings.text_alignment }};
+  }
+
+  .ai-text-section__container-{{ ai_gen_id }} {
+    max-width: {{ block.settings.content_max_width }}px;
+    margin: 0 auto;
+  }
+
+  .ai-text-section__heading-{{ ai_gen_id }} {
+    color: {{ block.settings.heading_color }};
+    font-size: {{ block.settings.heading_size }}px;
+    font-weight: {{ block.settings.heading_weight }};
+    margin: 0 0 {{ block.settings.heading_spacing }}px 0;
+    line-height: {{ block.settings.heading_line_height }};
+  }
+
+  .ai-text-section__subheading-{{ ai_gen_id }} {
+    color: {{ block.settings.subheading_color }};
+    font-size: {{ block.settings.subheading_size }}px;
+    font-weight: {{ block.settings.subheading_weight }};
+    margin: 0 0 {{ block.settings.subheading_spacing }}px 0;
+    line-height: {{ block.settings.subheading_line_height }};
+  }
+
+  .ai-text-section__text-{{ ai_gen_id }} {
+    color: {{ block.settings.text_color }};
+    font-size: {{ block.settings.text_size }}px;
+    font-weight: {{ block.settings.text_weight }};
+    line-height: {{ block.settings.text_line_height }};
+    margin: 0;
+  }
+
+  .ai-text-section__text-{{ ai_gen_id }} p {
+    margin: 0 0 {{ block.settings.paragraph_spacing }}px 0;
+  }
+
+  .ai-text-section__text-{{ ai_gen_id }} p:last-child {
+    margin-bottom: 0;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-text-section-{{ ai_gen_id }} {
+      width: 100%;
+      padding: {{ block.settings.padding_top | times: 0.7 }}px {{ block.settings.padding_horizontal | times: 0.7 }}px {{ block.settings.padding_bottom | times: 0.7 }}px {{ block.settings.padding_horizontal | times: 0.7 }}px;
+    }
+
+    .ai-text-section__heading-{{ ai_gen_id }} {
+      font-size: {{ block.settings.heading_size | times: 0.8 }}px;
+    }
+
+    .ai-text-section__subheading-{{ ai_gen_id }} {
+      font-size: {{ block.settings.subheading_size | times: 0.9 }}px;
+    }
+
+    .ai-text-section__text-{{ ai_gen_id }} {
+      font-size: {{ block.settings.text_size | times: 0.95 }}px;
+    }
+  }
+{% endstyle %}
+
+<div class="ai-text-section-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="ai-text-section__container-{{ ai_gen_id }}">
+    {% if block.settings.heading != blank %}
+      <h2 class="ai-text-section__heading-{{ ai_gen_id }}">
+        {{ block.settings.heading }}
+      </h2>
+    {% endif %}
+
+    {% if block.settings.subheading != blank %}
+      <h3 class="ai-text-section__subheading-{{ ai_gen_id }}">
+        {{ block.settings.subheading }}
+      </h3>
+    {% endif %}
+
+    {% if block.settings.text != blank %}
+      <div class="ai-text-section__text-{{ ai_gen_id }}">
+        {{ block.settings.text }}
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Tekst sectie",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Inhoud"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "Hoofdtitel",
+      "default": "Welkom bij onze winkel"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "subheading",
+      "label": "Subtitel",
+      "default": "Ontdek onze collectie"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Tekst",
+      "default": "<p>Voeg hier je tekst toe. Je kunt meerdere alinea's toevoegen en de tekst opmaken zoals je wilt.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Hoofdtitel stijl"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Kleur",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Grootte",
+      "min": 16,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 36
+    },
+    {
+      "type": "select",
+      "id": "heading_weight",
+      "label": "Dikte",
+      "options": [
+        { "value": "300", "label": "Licht" },
+        { "value": "400", "label": "Normaal" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi-vet" },
+        { "value": "700", "label": "Vet" },
+        { "value": "800", "label": "Extra vet" }
+      ],
+      "default": "700"
+    },
+    {
+      "type": "range",
+      "id": "heading_line_height",
+      "label": "Regelhoogte",
+      "min": 1,
+      "max": 2,
+      "step": 0.1,
+      "default": 1.2
+    },
+    {
+      "type": "range",
+      "id": "heading_spacing",
+      "label": "Afstand onder",
+      "min": 0,
+      "max": 60,
+      "step": 4,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "Subtitel stijl"
+    },
+    {
+      "type": "color",
+      "id": "subheading_color",
+      "label": "Kleur",
+      "default": "#666666"
+    },
+    {
+      "type": "range",
+      "id": "subheading_size",
+      "label": "Grootte",
+      "min": 14,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "select",
+      "id": "subheading_weight",
+      "label": "Dikte",
+      "options": [
+        { "value": "300", "label": "Licht" },
+        { "value": "400", "label": "Normaal" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi-vet" },
+        { "value": "700", "label": "Vet" }
+      ],
+      "default": "500"
+    },
+    {
+      "type": "range",
+      "id": "subheading_line_height",
+      "label": "Regelhoogte",
+      "min": 1,
+      "max": 2,
+      "step": 0.1,
+      "default": 1.3
+    },
+    {
+      "type": "range",
+      "id": "subheading_spacing",
+      "label": "Afstand onder",
+      "min": 0,
+      "max": 60,
+      "step": 4,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "header",
+      "content": "Tekst stijl"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Kleur",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "text_size",
+      "label": "Grootte",
+      "min": 12,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "select",
+      "id": "text_weight",
+      "label": "Dikte",
+      "options": [
+        { "value": "300", "label": "Licht" },
+        { "value": "400", "label": "Normaal" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi-vet" }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "range",
+      "id": "text_line_height",
+      "label": "Regelhoogte",
+      "min": 1,
+      "max": 2,
+      "step": 0.1,
+      "default": 1.5
+    },
+    {
+      "type": "range",
+      "id": "paragraph_spacing",
+      "label": "Afstand tussen alinea's",
+      "min": 0,
+      "max": 40,
+      "step": 4,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "Tekstuitlijning",
+      "options": [
+        { "value": "left", "label": "Links" },
+        { "value": "center", "label": "Midden" },
+        { "value": "right", "label": "Rechts" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "content_max_width",
+      "label": "Maximale breedte inhoud",
+      "min": 400,
+      "max": 1200,
+      "step": 50,
+      "unit": "px",
+      "default": 800
+    },
+    {
+      "type": "range",
+      "id": "desktop_width_percent",
+      "label": "Desktop breedte",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "header",
+      "content": "Ruimte"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Ruimte boven",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Ruimte onder",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal",
+      "label": "Ruimte links en rechts",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Achtergrondkleur",
+      "default": "#ffffff"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Tekst sectie"
+    }
+  ]
+}
+{% endschema %}

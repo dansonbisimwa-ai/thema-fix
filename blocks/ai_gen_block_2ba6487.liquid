@@ -1,0 +1,435 @@
+{% doc %}
+  @prompt
+    Balk waar ik merknamen kan zetten
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-brand-bar-{{ ai_gen_id }} {
+    display: block;
+    width: 100%;
+    padding: {{ block.settings.padding_top }}px 0 {{ block.settings.padding_bottom }}px;
+    background-color: {{ block.settings.background_color }};
+  }
+
+  .ai-brand-bar__container-{{ ai_gen_id }} {
+    max-width: {{ block.settings.desktop_width_percent }}%;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  .ai-brand-bar__title-{{ ai_gen_id }} {
+    text-align: center;
+    margin: 0 0 {{ block.settings.title_spacing }}px;
+    color: {{ block.settings.text_color }};
+    font-size: {{ block.settings.title_size }}px;
+  }
+
+  .ai-brand-bar__grid-{{ ai_gen_id }} {
+    display: grid;
+    grid-template-columns: repeat({{ block.settings.brands_per_row_desktop }}, 1fr);
+    gap: {{ block.settings.spacing }}px;
+    align-items: center;
+    justify-items: center;
+  }
+
+  .ai-brand-bar__item-{{ ai_gen_id }} {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: {{ block.settings.item_padding }}px;
+  }
+
+  .ai-brand-bar__link-{{ ai_gen_id }} {
+    display: block;
+    width: 100%;
+    max-width: {{ block.settings.logo_max_width }}px;
+  }
+
+  .ai-brand-bar__image-{{ ai_gen_id }} {
+    width: 100%;
+    height: auto;
+    display: block;
+    {% if block.settings.grayscale %}
+      filter: grayscale(100%);
+      transition: filter 0.3s ease;
+    {% endif %}
+    opacity: {{ block.settings.opacity | divided_by: 100.0 }};
+  }
+
+  {% if block.settings.grayscale %}
+    .ai-brand-bar__link-{{ ai_gen_id }}:hover .ai-brand-bar__image-{{ ai_gen_id }} {
+      filter: grayscale(0%);
+      opacity: 1;
+    }
+  {% endif %}
+
+  .ai-brand-bar__placeholder-{{ ai_gen_id }} {
+    width: 100%;
+    max-width: {{ block.settings.logo_max_width }}px;
+    aspect-ratio: 3 / 2;
+    background-color: #f4f4f4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+  }
+
+  .ai-brand-bar__placeholder-{{ ai_gen_id }} svg {
+    width: 60%;
+    height: 60%;
+    opacity: 0.3;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-brand-bar__grid-{{ ai_gen_id }} {
+      grid-template-columns: repeat({{ block.settings.brands_per_row_mobile }}, 1fr);
+    }
+  }
+{% endstyle %}
+
+<brand-bar-{{ ai_gen_id }} class="ai-brand-bar-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="ai-brand-bar__container-{{ ai_gen_id }}">
+    {% if block.settings.title != blank %}
+      <h2 class="ai-brand-bar__title-{{ ai_gen_id }}">{{ block.settings.title }}</h2>
+    {% endif %}
+
+    <div class="ai-brand-bar__grid-{{ ai_gen_id }}">
+      {% for i in (1..8) %}
+        {% liquid
+          assign image_key = 'brand_image_' | append: i
+          assign link_key = 'brand_link_' | append: i
+          assign brand_image = block.settings[image_key]
+          assign brand_link = block.settings[link_key]
+        %}
+
+        <div class="ai-brand-bar__item-{{ ai_gen_id }}">
+          {% if brand_link != blank %}
+            <a href="{{ brand_link }}" class="ai-brand-bar__link-{{ ai_gen_id }}">
+              {% if brand_image %}
+                <img
+                  src="{{ brand_image | image_url: width: 400 }}"
+                  alt="{{ brand_image.alt | escape }}"
+                  loading="lazy"
+                  width="{{ brand_image.width }}"
+                  height="{{ brand_image.height }}"
+                  class="ai-brand-bar__image-{{ ai_gen_id }}"
+                >
+              {% else %}
+                <div class="ai-brand-bar__placeholder-{{ ai_gen_id }}">
+                  {{ 'image' | placeholder_svg_tag }}
+                </div>
+              {% endif %}
+            </a>
+          {% else %}
+            {% if brand_image %}
+              <div class="ai-brand-bar__link-{{ ai_gen_id }}">
+                <img
+                  src="{{ brand_image | image_url: width: 400 }}"
+                  alt="{{ brand_image.alt | escape }}"
+                  loading="lazy"
+                  width="{{ brand_image.width }}"
+                  height="{{ brand_image.height }}"
+                  class="ai-brand-bar__image-{{ ai_gen_id }}"
+                >
+              </div>
+            {% else %}
+              <div class="ai-brand-bar__placeholder-{{ ai_gen_id }}">
+                {{ 'image' | placeholder_svg_tag }}
+              </div>
+            {% endif %}
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</brand-bar-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class BrandBar{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+      }
+    }
+    customElements.define('brand-bar-{{ ai_gen_id }}', BrandBar{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Merkenbalk",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Inhoud"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "title",
+      "label": "Titel"
+    },
+    {
+      "type": "range",
+      "id": "title_size",
+      "label": "Titelgrootte",
+      "min": 16,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "title_spacing",
+      "label": "Ruimte onder titel",
+      "min": 0,
+      "max": 60,
+      "step": 4,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "header",
+      "content": "Merk 1"
+    },
+    {
+      "type": "image_picker",
+      "id": "brand_image_1",
+      "label": "Logo"
+    },
+    {
+      "type": "url",
+      "id": "brand_link_1",
+      "label": "Link"
+    },
+    {
+      "type": "header",
+      "content": "Merk 2"
+    },
+    {
+      "type": "image_picker",
+      "id": "brand_image_2",
+      "label": "Logo"
+    },
+    {
+      "type": "url",
+      "id": "brand_link_2",
+      "label": "Link"
+    },
+    {
+      "type": "header",
+      "content": "Merk 3"
+    },
+    {
+      "type": "image_picker",
+      "id": "brand_image_3",
+      "label": "Logo"
+    },
+    {
+      "type": "url",
+      "id": "brand_link_3",
+      "label": "Link"
+    },
+    {
+      "type": "header",
+      "content": "Merk 4"
+    },
+    {
+      "type": "image_picker",
+      "id": "brand_image_4",
+      "label": "Logo"
+    },
+    {
+      "type": "url",
+      "id": "brand_link_4",
+      "label": "Link"
+    },
+    {
+      "type": "header",
+      "content": "Merk 5"
+    },
+    {
+      "type": "image_picker",
+      "id": "brand_image_5",
+      "label": "Logo"
+    },
+    {
+      "type": "url",
+      "id": "brand_link_5",
+      "label": "Link"
+    },
+    {
+      "type": "header",
+      "content": "Merk 6"
+    },
+    {
+      "type": "image_picker",
+      "id": "brand_image_6",
+      "label": "Logo"
+    },
+    {
+      "type": "url",
+      "id": "brand_link_6",
+      "label": "Link"
+    },
+    {
+      "type": "header",
+      "content": "Merk 7"
+    },
+    {
+      "type": "image_picker",
+      "id": "brand_image_7",
+      "label": "Logo"
+    },
+    {
+      "type": "url",
+      "id": "brand_link_7",
+      "label": "Link"
+    },
+    {
+      "type": "header",
+      "content": "Merk 8"
+    },
+    {
+      "type": "image_picker",
+      "id": "brand_image_8",
+      "label": "Logo"
+    },
+    {
+      "type": "url",
+      "id": "brand_link_8",
+      "label": "Link"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "brands_per_row_desktop",
+      "label": "Merken per rij (desktop)",
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "select",
+      "id": "brands_per_row_mobile",
+      "label": "Merken per rij (mobiel)",
+      "options": [
+        {
+          "value": "2",
+          "label": "2"
+        },
+        {
+          "value": "3",
+          "label": "3"
+        }
+      ],
+      "default": "2"
+    },
+    {
+      "type": "range",
+      "id": "spacing",
+      "label": "Ruimte tussen logo's",
+      "min": 0,
+      "max": 60,
+      "step": 4,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "logo_max_width",
+      "label": "Maximale logo breedte",
+      "min": 60,
+      "max": 300,
+      "step": 10,
+      "unit": "px",
+      "default": 150
+    },
+    {
+      "type": "range",
+      "id": "item_padding",
+      "label": "Padding rond logo",
+      "min": 0,
+      "max": 40,
+      "step": 4,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "desktop_width_percent",
+      "label": "Desktop breedte",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "header",
+      "content": "Stijl"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Achtergrondkleur",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Tekstkleur",
+      "default": "#000000"
+    },
+    {
+      "type": "checkbox",
+      "id": "grayscale",
+      "label": "Grijswaarden effect",
+      "info": "Logo's worden grijs en krijgen kleur bij hover",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "opacity",
+      "label": "Logo doorzichtigheid",
+      "min": 30,
+      "max": 100,
+      "step": 10,
+      "unit": "%",
+      "default": 70
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding boven",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding onder",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    }
+  ],
+  "presets": [
+    {
+      "name": "Merkenbalk"
+    }
+  ]
+}
+{% endschema %}
